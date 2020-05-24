@@ -1,44 +1,47 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Epicenter view application
 
-## Available Scripts
+Use [ArcGIS](https://developers.arcgis.com/javascript/latest/api-reference/index.html) to visualize historical data of earthquake epicenter.
 
-In the project directory, you can run:
+### Quick Start
 
-### `yarn start`
+a). clone the repo.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+b). run the below scripts.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+```shell
+yarn install
+yarn start
+```
 
-### `yarn test`
+c). open localhosted page.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+>http://localhost:3000
 
-### `yarn build`
+![image](https://user-images.githubusercontent.com/30466424/82753566-89aa0b80-9e01-11ea-8efe-e6b6ae33ad9e.png)
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Demo: 2011/03/11 one day's epicenters which magnitude > 1.0
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Note for ArcGIS javascript API
 
-### `yarn eject`
+[Determining Limits for Client-side Map Graphics](https://developers.arcgis.com/javascript/3/jshelp/limits_for_graphics.html)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+- 817527: index.js:1 RangeError: Maximum call stack size exceeded
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- 77421: query pendding
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+- 1768: normal
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### TODO
 
-## Learn More
+Feature:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+- Animation.  
+- User input options.  
+- Performance.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Project:
+
+- Dependencies.  
+- Static github pages.  
