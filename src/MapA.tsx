@@ -29,7 +29,7 @@ const data = realData.data.filter((x: DataItems) => {
 
 console.log(data.length);
 
-export default function App() {
+export default function MapA() {
   React.useEffect(() => {
     esriLoader
       .loadModules([

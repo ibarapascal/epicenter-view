@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+// import MapA from './MapA';
+import MapB from './MapB';
 import * as serviceWorker from './serviceWorker';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    {/* <MapA /> */}
+    <MapB />
   </React.StrictMode>,
   document.getElementById('root')
 );
