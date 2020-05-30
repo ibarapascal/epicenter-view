@@ -9,58 +9,89 @@
     <title>Earthquake Epicenter Visualization</title>
     <link
       rel="stylesheet"
-      href="https://js.arcgis.com/4.15/esri/themes/dark-blue/main.css"
+      href="https://js.arcgis.com/4.15/esri/themes/light/main.css"
     />
     <script src="https://js.arcgis.com/4.15/"></script>
     <style>
-      html,
-      body {
-        width: 100%;
+      .sidebar {
         height: 100%;
-        padding: 0;
-        margin: 0;
+        width: 10%;
+        position: fixed;
+        top: 0;
+        left: 0;
       }
-      #applicationDiv {
+      .sidebar .fieldZone {
+        padding: 5%;
+      }
+      .sidebar .fieldZone p {
+        margin: 0px;
+      }
+      .sidebar hr {
+        margin: 0px;
+      }
+      .applicationDiv {
+        margin-left: 10%;
         position: absolute;
         width: 100%;
         height: 100%;
-        display: flex;
-        flex-direction: column;
-        overflow: hidden;
+      }
+      #timeButton {
+        float: right;
+      }
+      #timeRange {
+        width: 100%;
+        margin-top: 5%;
+        margin-bottom: 5%;
       }
       #viewDiv {
         width: 100%;
         height: 100%;
-        flex: 1 1 auto;
-        order: 1;
       }
     </style>
   </head>
 
   <body>
-    <div id="applicationDiv">
-      <div id="viewDiv">
+    <div class="sidebar">
+      <div class="fieldZone">
+        <h2>Earthquake Epicenter Visualization</h2>
+        <p>Author: KeiKai</p>
+        <p>Github: <a href="https://github.com/ibarapascal/epicenter-view" alt="">epicenter-view</a></p>
       </div>
-      <div class="slidecontainer">
+      <hr />
+      <div class="fieldZone">
+        Time
+        <button id="timeButton">Run</button>
         <input
           type="range"
-          min="1299822360"
-          max="1299908760"
-          value="1299822360"
           class="slider"
-          id="myRange"
+          id="timeRange"
         >
-        <p>Value: <span id="output"></span></p>
+        <p>Pointer: <span id="timePointer"></span></p>
+      </div>
+      <hr />
+      <div class="fieldZone">
+        Animation
+      </div>
+      <hr />
+      <div class="fieldZone">
+        Note
+      </div>
+    </div>
+    <div class="applicationDiv">
+      <div id="viewDiv">
       </div>
     </div>
     <script>
       const timeStart = 1299822360;
       const timeEnd = 1299908760;
-      const slider = document.getElementById("myRange");
-      const output = document.getElementById("output");
-      const playButton = document.getElementById("playButton");
-      output.innerHTML = slider.value;
-      
+      const slider = document.getElementById("timeRange");
+      const timePointer = document.getElementById("timePointer");
+      const timeButton = document.getElementById("timeButton");
+      slider.min = timeStart;
+      slider.max = timeEnd;
+      slider.value = timeStart;
+      timePointer.innerHTML = new Date(Number(slider.value) * 1000);
+
       require([
         "esri/Map",
         "esri/layers/FeatureLayer",
@@ -169,7 +200,7 @@
         const layer = new FeatureLayer({
           url: "https://services6.arcgis.com/VvsGqDoDGHhTumpK/arcgis/rest/services/dt_jp_baseattrs_m1_20110311/FeatureServer",
           title: "Epicenter",
-          renderer: renderer(output.innerHTML),
+          renderer: renderer(Number(slider.value)),
           popupTemplate: pTemplate
         });
         new MapView({
@@ -182,14 +213,41 @@
           zoom: 7
         });
 
-
+        let timeout;
+        const stopAnimation = () => {
+          timeButton.innerText = 'Run';
+          clearTimeout(timeout);
+        }
+        const animationUpdate = t => {
+          slider.value = t;
+          timePointer.innerHTML = new Date(t * 1000);
+          // console.log('Animation', t);
+          layer.renderer = renderer(t);
+        }
+        timeButton.addEventListener("click", function() {
+          if (timeButton.innerText === 'Run') {
+            timeButton.innerText = 'Stop';
+            let currentTime = Number(slider.value);
+            const timeDiff = timeEnd - timeStart;
+            const displayDuration = 5;
+            const framePerSecond = 30;
+            const timeDelta = timeDiff / (displayDuration * framePerSecond);
+            timeout = setInterval(function() {
+              if (currentTime >= timeEnd) {
+                stopAnimation();
+              }
+              animationUpdate(currentTime);
+              currentTime += timeDelta;
+            }, 1000 / framePerSecond);
+          } else {
+            stopAnimation();
+          }
+        });
         slider.oninput = function() {
-          output.innerHTML = this.value;
-          console.log(output.innerHTML);
-          layer.renderer = renderer(output.innerHTML);
+          stopAnimation();
+          animationUpdate(Number(this.value));
         }
       });
-
     </script>
   </body>
 </html>
