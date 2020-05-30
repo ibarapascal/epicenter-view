@@ -103,7 +103,8 @@
         "esri/widgets/Home",
         "esri/widgets/Fullscreen",
         "esri/widgets/Slider",
-        "esri/widgets/Expand"
+        "esri/widgets/Expand",
+        "esri/widgets/BasemapToggle",
       ], function(
         Map,
         FeatureLayer,
@@ -113,7 +114,8 @@
         Home,
         Fullscreen,
         Slider,
-        Expand
+        Expand,
+        BasemapToggle
       ) {
         const renderer = (timestamp) => {
           // https://developers.arcgis.com/javascript/latest/sample-code/visualization-multivariate-2d/index.html
@@ -223,7 +225,7 @@
           renderer: renderer(Number(slider.value)),
           popupTemplate: pTemplate
         });
-        new MapView({
+        const view = new MapView({
           map: new Map({
             basemap: 'oceans',
             layers: [layer]
@@ -232,6 +234,11 @@
           center: [144, 36],
           zoom: 7
         });
+        const basemapToggle = new BasemapToggle({
+          view: view,
+          nextBasemap: "satellite"
+        });
+        view.ui.add(basemapToggle, "bottom-left");
 
         let timeout;
         const stopAnimation = () => {
