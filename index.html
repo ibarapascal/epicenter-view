@@ -168,32 +168,47 @@
             visualVariables: [colorVisVar, sizeVisVar, opacityViVar]
           }
         };
+        // https://developers.arcgis.com/javascript/latest/api-reference/esri-PopupTemplate.html
         const pTemplate = {
           // autocasts as new PopupTemplate()
-          title: "Time: {timestamp}, Magnitude: {magnitude_a}",
-          content:
-            "latitude: {latitude}, longitude {longitude}, depth {depth}",
-          fieldInfos: [
+          title: "Magnitude: {magnitude_a}",
+          // https://developers.arcgis.com/javascript/latest/guide/arcade/
+          expressionInfos: [{
+            name: "date",
+            title: "time",
+            expression: "$feature.timestamp * 1000"
+          }],
+          content: [
             {
-              fieldName: "latitude",
-              format: {
-                places: 0,
-                digitSeparator: true
-              }
-            },
-            {
-              fieldName: "longitude",
-              format: {
-                places: 0,
-                digitSeparator: true
-              }
-            },
-            {
-              fieldName: "depth",
-              format: {
-                places: 0,
-                digitSeparator: true
-              }
+              type: "fields", // Autocast as new FieldsContent()
+              // https://developers.arcgis.com/javascript/latest/api-reference/esri-popup-support-FieldInfoFormat.html
+              fieldInfos: [
+                {
+                  label: "time",
+                  fieldName: "expression/date",
+                  format: {
+                    places: 0,
+                    digitSeparator: false,
+                    dateFormat: 'short-date-long-time-24',
+                  }
+                },
+                {
+                  label: "latitude",
+                  fieldName: "latitude",
+                },
+                {
+                  label: "longitude",
+                  fieldName: "longitude",
+                },
+                {
+                  label: "depth",
+                  fieldName: "depth",
+                },
+                {
+                  label: "magnitude",
+                  fieldName: "magnitude_a",
+                }
+              ]
             }
           ]
         }
