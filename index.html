@@ -96,7 +96,8 @@
       require([
         "esri/Map",
         "esri/layers/FeatureLayer",
-        "esri/views/MapView",
+        "esri/views/MapView", // flat
+        // "esri/views/SceneView", // earth
         "esri/core/promiseUtils",
         "esri/widgets/Legend",
         "esri/widgets/Home",
@@ -228,7 +229,7 @@
             layers: [layer]
           }),
           container: "viewDiv",
-          center: [140, 36],
+          center: [144, 36],
           zoom: 7
         });
 
