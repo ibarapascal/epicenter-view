@@ -87,6 +87,7 @@
       const slider = document.getElementById("timeRange");
       const timePointer = document.getElementById("timePointer");
       const timeButton = document.getElementById("timeButton");
+      const timeDiff = timeEnd - timeStart;
       slider.min = timeStart;
       slider.max = timeEnd;
       slider.value = timeStart;
@@ -124,8 +125,10 @@
             // normalizationField: "magnitude_a",
             // Set the color ramp based on two values (min/max) and two colors
             stops: [
-              { value: Number(timestamp), color: [255, 0, 64] },
-              { value: timeEnd, color: [255, 255, 64] }
+              { value: slider.value - timeDiff, color: [128, 128, 128] },
+              { value: slider.value - timeDiff * 0.3, color: [128, 128, 128] },
+              { value: slider.value - timeDiff * 0.5, color: [255, 117, 43] },
+              { value: slider.value, color: [255, 64, 0] }
             ]
           };
           const sizeVisVar = {
@@ -144,14 +147,15 @@
             ]
           };
           // https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-visualVariables-OpacityVariable.html
-          const opacityViVar = {
+          const opacityVisVar = {
             type: "opacity",
-            field: "magnitude_a",
+            field: "timestamp",
             // maps data values to opacity values
             stops: [
-              { value: 1, opacity: 0.1 },
-              { value: 5, opacity: 0.5 },
-              { value: 9, opacity: 0.9 }
+              { value: slider.value - timeDiff * 0.3, opacity: 0.1 },
+              { value: slider.value - timeDiff * 0.1, opacity: 0.9 },
+              { value: slider.value - 1, opacity: 1 },
+              { value: slider.value, opacity: 0 }
             ]
           };
           return {
@@ -165,7 +169,7 @@
               }
             }, 
             // Set the color and size visual variables on the renderer
-            visualVariables: [colorVisVar, sizeVisVar, opacityViVar]
+            visualVariables: [colorVisVar, sizeVisVar, opacityVisVar]
           }
         };
         // https://developers.arcgis.com/javascript/latest/api-reference/esri-PopupTemplate.html
@@ -236,15 +240,13 @@
         const animationUpdate = t => {
           slider.value = t;
           timePointer.innerHTML = new Date(t * 1000);
-          // console.log('Animation', t);
           layer.renderer = renderer(t);
         }
         timeButton.addEventListener("click", function() {
           if (timeButton.innerText === 'Run') {
             timeButton.innerText = 'Stop';
             let currentTime = Number(slider.value);
-            const timeDiff = timeEnd - timeStart;
-            const displayDuration = 5;
+            const displayDuration = 10;
             const framePerSecond = 30;
             const timeDelta = timeDiff / (displayDuration * framePerSecond);
             timeout = setInterval(function() {
