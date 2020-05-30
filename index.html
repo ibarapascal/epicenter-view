@@ -82,6 +82,9 @@
       </div>
     </div>
     <script>
+      /**
+       * Const and init values 
+       */
       const timeStart = 1299822360;
       const timeEnd = 1299908760;
       const slider = document.getElementById("timeRange");
@@ -92,7 +95,10 @@
       slider.max = timeEnd;
       slider.value = timeStart;
       timePointer.innerHTML = new Date(Number(slider.value) * 1000);
-
+      /**
+       * ArcGIS API 
+       * https://developers.arcgis.com/javascript/latest/api-reference/index.html
+       */
       require([
         "esri/Map",
         "esri/layers/FeatureLayer",
@@ -117,16 +123,15 @@
         Expand,
         BasemapToggle
       ) {
-        const renderer = (timestamp) => {
-          // https://developers.arcgis.com/javascript/latest/sample-code/visualization-multivariate-2d/index.html
+        /**
+         * Layer render
+         * https://developers.arcgis.com/javascript/latest/sample-code/visualization-multivariate-2d/index.html
+         * https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-visualVariables-OpacityVariable.html
+         */
+        const renderer = () => {
           const colorVisVar = {
-            // The type must be set to color for the renderer to know it will use color
             type: "color",
-            // Assign the field name to visualize with color
             field: "timestamp",
-            // If normalizing set the field to normalize by
-            // normalizationField: "magnitude_a",
-            // Set the color ramp based on two values (min/max) and two colors
             stops: [
               { value: slider.value - timeDiff, color: [128, 128, 128] },
               { value: slider.value - timeDiff * 0.3, color: [128, 128, 128] },
@@ -135,25 +140,17 @@
             ]
           };
           const sizeVisVar = {
-            // The type must be set to size for the renderer to know size will be altered
             type: "size",
-            // Assign the field name to visualize with size
             field: "magnitude_a",
-            // Set the field to normalize the values by
-            // normalizationField: "magnitude_a",
-            valueUnit: "unknown",
-            // Create a size ramp based on the min/max values
             stops: [
               { value: 1, size: 1 },
               { value: 5, size: 7 },
               { value: 9, size: 49 }
             ]
           };
-          // https://developers.arcgis.com/javascript/latest/api-reference/esri-renderers-visualVariables-OpacityVariable.html
           const opacityVisVar = {
             type: "opacity",
             field: "timestamp",
-            // maps data values to opacity values
             stops: [
               { value: slider.value - timeDiff * 0.3, opacity: 0.1 },
               { value: slider.value - timeDiff * 0.1, opacity: 0.9 },
@@ -162,24 +159,26 @@
             ]
           };
           return {
-            type: "simple", // autocasts as new SimpleRenderer()
-            // Define a default marker symbol.
+            type: "simple",
             symbol: {
-              type: "simple-marker", // autocasts as new SimpleMarkerSymbol()
+              type: "simple-marker",
               outline: {
                 color: [192, 192, 192],
                 width: 0.5
               }
             }, 
-            // Set the color and size visual variables on the renderer
             visualVariables: [colorVisVar, sizeVisVar, opacityVisVar]
           }
         };
-        // https://developers.arcgis.com/javascript/latest/api-reference/esri-PopupTemplate.html
+        /**
+         * Layer popup template
+         * https://developers.arcgis.com/javascript/latest/api-reference/esri-PopupTemplate.html
+         * https://developers.arcgis.com/javascript/latest/guide/arcade/
+         * https://developers.arcgis.com/javascript/latest/api-reference/esri-popup-support-FieldInfoFormat.html
+         */
+        // 
         const pTemplate = {
-          // autocasts as new PopupTemplate()
           title: "Magnitude: {magnitude_a}",
-          // https://developers.arcgis.com/javascript/latest/guide/arcade/
           expressionInfos: [{
             name: "date",
             title: "time",
@@ -187,8 +186,7 @@
           }],
           content: [
             {
-              type: "fields", // Autocast as new FieldsContent()
-              // https://developers.arcgis.com/javascript/latest/api-reference/esri-popup-support-FieldInfoFormat.html
+              type: "fields",
               fieldInfos: [
                 {
                   label: "time",
@@ -218,13 +216,19 @@
               ]
             }
           ]
-        }
+        };
+        /**
+         * Layer
+         */
         const layer = new FeatureLayer({
           url: "https://services6.arcgis.com/VvsGqDoDGHhTumpK/arcgis/rest/services/dt_jp_baseattrs_m1_20110311/FeatureServer",
           title: "Epicenter",
-          renderer: renderer(Number(slider.value)),
+          renderer: renderer(),
           popupTemplate: pTemplate
         });
+        /**
+         * Main Map
+         */
         const view = new MapView({
           map: new Map({
             basemap: 'oceans',
@@ -234,12 +238,20 @@
           center: [144, 36],
           zoom: 7
         });
+        /**
+         * Map toogle
+         * https://developers.arcgis.com/javascript/latest/guide/select-a-basemap/
+         */
         const basemapToggle = new BasemapToggle({
           view: view,
           nextBasemap: "satellite"
         });
         view.ui.add(basemapToggle, "bottom-left");
 
+        /**
+         * Animation
+         * https://developers.arcgis.com/javascript/latest/sample-code/visualization-vv-opacity-animate/index.html
+         */
         let timeout;
         const stopAnimation = () => {
           timeButton.innerText = 'Run';
@@ -248,7 +260,7 @@
         const animationUpdate = t => {
           slider.value = t;
           timePointer.innerHTML = new Date(t * 1000);
-          layer.renderer = renderer(t);
+          layer.renderer = renderer();
         }
         timeButton.addEventListener("click", function() {
           if (timeButton.innerText === 'Run') {
